@@ -1,0 +1,72 @@
+DEMOS_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+JDKS_DIR  ?= $(abspath $(DEMOS_DIR)/../)
+
+#
+# Java Environment Options
+# - JDK_VER (optional)
+# - FLAVOR  (optional)
+#
+JDK_VER      ?= jdk8u
+ALL_JDK_VERS := jdk8u jdk11u jdk17u
+ifeq ($(filter $(JDK_VER), $(ALL_JDK_VERS)), )
+  $(error invalid FLAVOR value, valid values are $(ALL_FLAVORS))
+endif
+FLAVOR      ?= slowdebug
+ALL_FLAVORS := slowdebug fastdebug optimized release
+ifeq ($(filter $(FLAVOR), $(ALL_FLAVORS)), )
+  $(error invalid FLAVOR value '$(FLAVOR)', valid values are $(ALL_FLAVORS))
+endif
+
+ifeq ($(JDK_VER), jdk17u)
+  BUILT_JDK_DIR := $(JDKS_DIR)/$(JDK_VER)/build/linux-x86_64-server-$(FLAVOR)/jdk
+else
+  BUILT_JDK_DIR := $(JDKS_DIR)/$(JDK_VER)/build/linux-x86_64-normal-server-$(FLAVOR)/jdk
+endif
+JDK_BINS_DIR := $(BUILT_JDK_DIR)/bin
+
+JAVA         := $(JDK_BINS_DIR)/java
+JAVAC        := $(JDK_BINS_DIR)/javac
+
+
+#
+# Compilation Options
+# - JAVAC_OPTS (optional)
+#
+
+
+#
+# Program Options
+# - MAIN_CLASS (mandantory)
+# - PROG_ARGS  (optional)
+#
+ifeq ($(strip $(MAIN_CLASS)), )
+  $(error MAIN_CLASS is not specified)
+endif
+
+
+#
+# Running Options
+# - HS_OPTS  (optional)
+#
+HS_OPTS   += -XX:-TieredCompilation \
+             -XX:-UseBiasedLocking
+JAVA_OPTS += $(HS_OPTS)
+
+
+.PHONY: compile, run, gdb, clean, clerr
+
+compile:
+	find . -name "*.java" | xargs -r $(JAVAC) $(JAVAC_OPTS)
+
+run: compile
+	$(JAVA) $(JAVA_OPTS) $(MAIN_CLASS) $(PROG_ARGS)
+
+gdb: compile
+	gdb --args $(JAVA) $(JAVA_OPTS) $(MAIN_CLASS) $(PROG_ARGS)
+
+clean:
+	rm -f hotspot_pid*
+	find . -name "*.class" | xargs -r rm
+
+clerr:
+	rm -f hs_err*

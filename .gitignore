@@ -1,0 +1,5 @@
+**/.DS_Store
+**/*.class
+**/*.so
+**/hotspot_pid*
+**/hs_err*
