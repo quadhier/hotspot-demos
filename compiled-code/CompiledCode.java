@@ -11,7 +11,7 @@ public class CompiledCode {
 
   public static void alloc() {
     while (true) {
-      Object ref = new Object[1000_000_000];
+      Object ref = new Object[1000_000];
     }
   }
 
