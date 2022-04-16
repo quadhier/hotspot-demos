@@ -1,1 +1,1 @@
-# Safepoint Demos
+# HotSpot Demos
