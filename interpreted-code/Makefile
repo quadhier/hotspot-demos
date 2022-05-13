@@ -10,6 +10,6 @@ MAIN_CLASS := InterpretedCode
 
 HS_OPTS    := -Xint \
               -XX:+PrintInterpreter \
-							-XX:+LogVMOutput \
+              -XX:+LogVMOutput \
 
 include ../Makefile.common

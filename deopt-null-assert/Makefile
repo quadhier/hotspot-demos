@@ -13,7 +13,7 @@ COMP_CMD   := -XX:CompileCommand="compileonly DeoptNullAssert.foo" \
 HS_OPTS    := $(COMP_CMD) \
               -XX:-BackgroundCompilation \
               -XX:CompileThreshold=100 \
-							-XX:+LogVMOutput \
+              -XX:+LogVMOutput \
               -XX:+TraceDeoptimization \
 
 include ../Makefile.common
