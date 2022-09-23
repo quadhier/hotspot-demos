@@ -53,6 +53,23 @@ HS_OPTS   += -XX:-TieredCompilation \
 JAVA_OPTS += $(HS_OPTS)
 
 
+#
+# GDB Options
+#
+GDB_SCRIPT_FILE := ./gdb-script.py
+ifneq ($(wildcard $(GDB_SCRIPT_FILE)), )
+  GDB_SCRIPT_CMD := -x ./gdb-script.py
+else
+  GDB_SCRIPT_CMD :=
+endif
+GDB_INIT_CMD := \
+                -iex 'add-auto-load-safe-path $(shell pwd)/.gdbinit' \
+                -ex  'set confirm off' \
+                -ex  'add-symbol-file $(BUILT_JDK_DIR)/lib/amd64/server/libjvm.so' \
+                -ex  'set confirm on' \
+                $(GDB_SCRIPT_CMD) \
+
+
 .PHONY: compile, run, gdb, clean, clerr
 
 compile:
@@ -62,11 +79,11 @@ run: compile
 	$(JAVA) $(JAVA_OPTS) $(MAIN_CLASS) $(PROG_ARGS)
 
 gdb: compile
-	gdb --args $(JAVA) $(JAVA_OPTS) $(MAIN_CLASS) $(PROG_ARGS)
+	gdb $(GDB_INIT_CMD) --args $(JAVA) $(JAVA_OPTS) $(MAIN_CLASS) $(PROG_ARGS)
 
 clean:
 	rm -f hotspot_pid*
-	find . -name "*.class" | xargs -r rm
+	rm -f *.class
 
 clerr:
 	rm -f hs_err*

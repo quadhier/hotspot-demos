@@ -6,14 +6,12 @@
 
 JDK_VER    := jdk8u
 FLAVOR     := slowdebug
-MAIN_CLASS := CompiledCode
+MAIN_CLASS := LambdaExpr
 
-COMP_CMD   := -XX:CompileCommand="compileonly CompiledCode.loop ()V" \
+COMP_CMD   :=
 
 HS_OPTS    := $(COMP_CMD) \
-              -Xcomp \
-              -XX:+PrintDebugInfo \
+							-XX:+TraceClassResolution \
               -XX:+LogVMOutput \
-              -XX:+PrintAssembly \
 
 include ../Makefile.common
